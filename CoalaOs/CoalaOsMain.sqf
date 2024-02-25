@@ -1,7 +1,7 @@
 /*
   File: CoalaOsMain.sqf
-  Creator: Niky
-  Date: 11.03.2015
+	Creator: J. Schmidt
+	Date: 01-10-2023
 */
 
 /*    ___..._           _...___
@@ -21,11 +21,11 @@
 coalaFunctionsInit = execVM "CoalaOs\CoalaOsFunctions.sqf";
 coalaHandlerInit = execVM "CoalaOs\CoalaOsHandler.sqf";
 coalaFileInit = execVM "CoalaOs\CoalaOsFileStructure.sqf";
-coalaDefaultWebPage = "http://www.justdev.de/arma/index.html";
+coalaDefaultWebPage = "CoalaOs\Web\index.html";
 coalaDebug = true;
 _coalaOpenPrograms = missionNamespace getVariable ["CoalaLastOpenPrograms", []];
-fnCoala_debug = 
-{
+
+fnCoala_debug = {
 	//"debug_console" callExtension ((_this select 0) + "#1111");
 };
 
@@ -37,28 +37,27 @@ _laptop setDir (180);
 hideObject _laptop;
 
 _ok = createDialog "LaptopBase";
+
 sleep 0.10;
 closeDialog 2;
+
 _ok = createDialog "LaptopBase";
 _CRLF = toString [0x0D, 0x0A];
-
 _welcomeText = format["Coala OS [Version 1.34.483]%1Copyright (c) 2015 Legion Corporation. All rights reserved. jk.%1%1%2 ", _CRLF, coala_currentFolderName];
 ctrlSetText [1400, _welcomeText];
 
 [_coalaOpenPrograms] execVM "CoalaOs\CoalaOsReopenPrograms.sqf";
 
-waitUntil { (!dialog) or (!alive player) }; // hit ESC to close it 
+waitUntil { (!dialog) or (!alive player) }; // hit ESC to close it
 
-if(!alive player) then
-{
+if(!alive player) then {
 	closeDialog 2;
 };
 
 //kill remaining processes
 {
 	call compile format["[%2] call fncoala_stop%1", _x select 4, _x select 1];
-}
-foreach coala_ActivePrograms;
+} foreach coala_ActivePrograms;
 missionNamespace setVariable ["CoalaLastOpenPrograms", coala_ActivePrograms];
 
 deleteVehicle _laptop;
