@@ -1,7 +1,7 @@
 /*
 	File: CoalaOsFileStructure.sqf
 	Creator: J. Schmidt
-	Date: 01-10-2023
+	Date: 02.25.2024
 */
 
 coala_FileSystem = [
@@ -22,7 +22,7 @@ coala_FileSystem = [
 	["video3.mp4", 14, 10, [], 0, "\A3\Missions_F_EPA\video\A_in_quotation.ogv", "video"],
 	["Surveillance.exe", 15, 1, [], 0, "CoalaOs\Programs\CoalaOsSurveillance.sqf", "exe", "surveillance"],
 	["frontcam.exe", 16, 1, [], 0, "CoalaOs\Programs\CoalaOsFrontcam.sqf", "exe", "frontcam"],
-	["BlueforTracker.exe", 18, 1, [], 0, "CoalaOs\Programs\BlueforTracker.sqf", "exe", "bluefortracker"],
+	["CoalaOsBFT.exe", 18, 1, [], 0, "CoalaOs\Programs\CoalaOsBFT.sqf", "exe", "bluefortracker"],
 	["Chatty.exe", 19, 1, [], 0, "CoalaOs\Programs\CoalaOsChatty.sqf", "exe", "Chatty"],
 	["Bodycam.exe", 17, 1, [], 0, "CoalaOs\Programs\CoalaOsBodyCam.sqf", "exe", "bodycam"]
 ];
@@ -32,18 +32,18 @@ coala_currentFolderId = 0;
 coala_currentFolder = coala_FileSystem select coala_currentFolderId;
 coala_currentFolderName = format["%1\", coala_currentFolder select coala_currentFolderId];
 
-fncoala_addFolder = {
-	//[FolderName, parentId] call fncoala_addFolder;
+fnCoala_addFolder = {
+	// [FolderName, parentId] call fnCoala_addFolder;
 	_folderName = _this select 0;
 	_parentId = _this select 1;
 	_success = "Successfully created the folder.";
 
-	if(count (toArray _folderName) > 0) then {
+	if (count (toArray _folderName) > 0) then {
 		_newId = count coala_FileSystem;
 		// name, id, parent id, children, isfolder?
 		_newFolder = [_folderName, _newId, _parentId, [], 1];
-		
-		//beim parent einspeichern
+
+		// beim parent einspeichern
 		(coala_FileSystem select _parentId) set [count(coala_FileSystem select _parentId), _newId];
 		coala_FileSystem set [count coala_FileSystem, _newFolder];
 	} else {
@@ -52,8 +52,8 @@ fncoala_addFolder = {
 	_return = _success
 };
 
-fncoala_getSubFolders = {
-	//[FolderId] call fncoala_getSubFolders
+fnCoala_getSubFolders = {
+	// [FolderId] call fnCoala_getSubFolders
 	_folderId = _this select 0;
 	_subFolderIds = (coala_FileSystem select _folderId) select 3;
 	_folders = [];
@@ -66,30 +66,30 @@ fncoala_getSubFolders = {
 	_folders
 };
 
-fncoala_getSubFolderIdFromname = {
-	//[subFolderName] call fncoala_getSubFolderIdFromname
+fnCoala_getSubFolderIdFromname = {
+	// [subFolderName] call fnCoala_getSubFolderIdFromname
 	_subFolderName = _this select 0;
 	_id = -1;
 
-	if(count (toArray _subFolderName) > 0) then {
-		_folders = [coala_currentFolderId] call fncoala_getSubFolders;
+	if (count (toArray _subFolderName) > 0) then {
+		_folders = [coala_currentFolderId] call fnCoala_getSubFolders;
 		{
-			if(_x select 0 == _subFolderName) then {
+			if (_x select 0 == _subFolderName) then {
 				_didFind = true;
 				_id = _x select 1;
 			};
-		} foreach _folders;
+		} forEach _folders;
 	};
 
 	_id
 };
 
-fncoala_getCompleteFolderName = {
-	//[folderId] call fncoala_getCompleteFolderName
+fnCoala_getCompleteFolderName = {
+	// [folderId] call fnCoala_getCompleteFolderName
 	_folderId = _this select 0;
 	_folder = coala_FileSystem select _folderId;
 
-	while{_folder select 1 != _folder select 2} do {
+	while { _folder select 1 != _folder select 2 } do {
 		_parentFolder = coala_FileSystem select (_folder select 2);
 		_fullPath = format["%2\%1", _fullPath, _parentFolder select 0];
 		_folder = _parentFolder;
@@ -98,8 +98,8 @@ fncoala_getCompleteFolderName = {
 	_fullPath
 };
 
-fncoala_getFileWithName = {
-	//[fileName] call fncoala_getFileWithName;
+fnCoala_getFileWithName = {
+	// [fileName] call fnCoala_getFileWithName;
 	_fileName = _this select 0;
 	_fileId = -1;
 	_toFindFile = [];
@@ -107,11 +107,11 @@ fncoala_getFileWithName = {
 	_allCurFiles = coala_currentFolder select 3;
 	{
 		_curFile = coala_FileSystem select _x;
-		if((_curFile) select 0 == _fileName) then {
+		if ((_curFile) select 0 == _fileName) then {
 			_fileId = _curFile select 1;
 			_toFindFile = _curFile;
 		};
-	} foreach _allCurFiles;
+	} forEach _allCurFiles;
 
 	_toFindFile
 };

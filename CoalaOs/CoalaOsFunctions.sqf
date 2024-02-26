@@ -1,27 +1,27 @@
 /*
 	File: CoalaOsFuncitons.sqf
 	Creator: J. Schmidt
-	Date: 01-10-2023
+	Date: 02.25.2024
 */
 
-fncoala_excecuteCommandFromNonConsole = {
+fnCoala_excecuteCommandFromNonConsole = {
 	_attach = _this select 0;
 	if (_attach != "") then {
 		_input = ctrlText 1400;
 		ctrlSetText [1400, format["%1%2 ", _input, _attach]];
-		_returned = [_attach] call fncoala_excecuteCommand;
+		_returned = [_attach] call fnCoala_excecuteCommand;
 		_returned
 	};
 };
 
-//Führt den übergebenen Command aus.
-fncoala_excecuteCommand = {
-	//[command : String] call fnc_excecuteCommand;
+// Führt den übergebenen Command aus.
+fnCoala_excecuteCommand = {
+	// [command : String] call fnc_excecuteCommand;
 	_cmd = _this select 0;
 	_commandWithoutParam = _cmd;
 	_completeCmd = _cmd;
 	_returned = [];
-	_parameters = [_cmd] call fncoala_getParameters;
+	_parameters = [_cmd] call fnCoala_getParameters;
 
 	if (count _parameters > 0) then {
 		_cmd = _parameters select 0;
@@ -29,15 +29,15 @@ fncoala_excecuteCommand = {
 	};
 	_commands = ["cd", "ls", "time", "help", "open", "processes", "close"];
 	_commandHelp = [
-		"cd			- change active directory 'cd [foldername]'",
-		"ls			- list files in active directory 'ls'",
-		"time		- shows the current time 'time'",
-		"help 		- displays this list 'help'",
-		"open		- opens a given file 'open [filename] [parameters]'",
+		"cd - change active directory 'cd [foldername]'",
+		"ls - list files in active directory 'ls'",
+		"time - shows the current time 'time'",
+		"help - displays this list 'help'",
+		"open - opens a given file 'open [filename] [parameters]'",
 		"processes	- shows all active processes 'processes'",
-		"close		- closes a given process 'close [process id]' (process id can be found with processes command)"
+		"close - closes a given process 'close [process id]' (process id can be found with processes command)"
 	];
-	
+
 	if (_cmd == "processes") then {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
@@ -46,7 +46,7 @@ fncoala_excecuteCommand = {
 
 		{
 			_programs = format["%1%2%4# %3", _programs, _CRLF, _x select 2, _x select 1];
-		} foreach coala_ActivePrograms;
+		} forEach coala_ActivePrograms;
 
 		_attach = format["%1Open processes: %2%1%1%3", _CRLF, _programs, coala_currentFolderName];
 		_returned = _attach;
@@ -55,22 +55,22 @@ fncoala_excecuteCommand = {
 	if (_cmd == "close") then {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
-		if(count _parameters > 1) then {
+		if (count _parameters > 1) then {
 			_id = parseNumber format["%1", _parameters select 1];
 			_foundArr = [];
 			_foundIndex = -1;
 
 			{
-				if(format["%1",_id] == format["%1", _x select 1]) then {
+				if (format["%1", _id] == format["%1", _x select 1]) then {
 					_foundIndex = _forEachIndex;
 					breakOut "";
 				};
-			} foreach coala_ActivePrograms;
+			} forEach coala_ActivePrograms;
 
 			if (_foundIndex != -1) then {
 				_foundArr = coala_ActivePrograms deleteAt _foundIndex;
 				missionNamespace setVariable [format["coala_ActivePrograms"], coala_ActivePrograms];
-				call compile format["[%2] call fncoala_stop%1", _foundArr select 4, str(_id)];
+				call compile format["[%2] call fnCoala_stop%1", _foundArr select 4, str(_id)];
 
 				_attach = format["%1Process %3 was closed.%1%1%2", _CRLF, coala_currentFolderName, _id];
 				_returned = _attach;
@@ -92,7 +92,7 @@ fncoala_excecuteCommand = {
 
 		if (count _parameters > 0) then {
 			_filename = _parameters select 1;
-			_file = [_fileName] call fncoala_getFileWithName;
+			_file = [_fileName] call fnCoala_getFileWithName;
 
 			if (count _file > 0) then {
 				_attach = format["%1Opening File: %2%1%1%3", _CRLF, _filename, coala_currentFolderName];
@@ -132,7 +132,7 @@ fncoala_excecuteCommand = {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
 
-		_toReturn = [_commandHelp] call fncoala_generateListFromArray;
+		_toReturn = [_commandHelp] call fnCoala_generateListFromArray;
 
 		_attach = format["%1Availabe Command are:%2%1%1%3", _CRLF, _toReturn, coala_currentFolderName];
 		_returned = _attach;
@@ -142,18 +142,18 @@ fncoala_excecuteCommand = {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
 
-		if(count _parameters > 1) then {
+		if (count _parameters > 1) then {
 			_id = -1;
-			if(_parameters select 1 == "..") then {
+			if (_parameters select 1 == "..") then {
 				_id = coala_currentFolder select 2;
 			} else {
-				_id = [_parameters select 1] call fncoala_getSubFolderIdFromname;
+				_id = [_parameters select 1] call fnCoala_getSubFolderIdFromname;
 			};
 
 			if (_id != -1) then {
 				coala_currentFolderId = _id;
 				coala_currentFolder = coala_FileSystem select coala_currentFolderId;
-				coala_currentFolderName = format["%1\", [_id] call fncoala_getCompleteFolderName];
+				coala_currentFolderName = format["%1\", [_id] call fnCoala_getCompleteFolderName];
 				_attach = format["%1%1%3", _CRLF, _toReturn, coala_currentFolderName];
 				_returned = _attach;
 				ctrlSetText [1400, format["%1%2 ", _input, _attach]];
@@ -171,12 +171,12 @@ fncoala_excecuteCommand = {
 	if (_cmd == "ls") then {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
-		_folders = [coala_currentFolderId] call fncoala_getSubFolders;
+		_folders = [coala_currentFolderId] call fnCoala_getSubFolders;
 		_returned = _folders;
-		_folderList = [_folders] call fncoala_generateListFromFolders;
+		_folderList = [_folders] call fnCoala_generateListFromFolders;
 
-		if(count _folders == 0) then {
-			_folderList = format["%1-Folder is empty-",_CRLF];
+		if (count _folders == 0) then {
+			_folderList = format["%1-Folder is empty-", _CRLF];
 		};
 		_attach = format["%1%2%2%3", _folderList, _CRLF, coala_currentFolderName];
 		ctrlSetText [1400, format["%1%2 ", _input, _attach]];
@@ -185,18 +185,24 @@ fncoala_excecuteCommand = {
 		_input = ctrlText 1400;
 		_CRLF = toString [0x0D, 0x0A];
 
-		_hour = floor daytime;
-		_minute = floor ((daytime - _hour) * 60);
-		_second = floor (((((daytime) - (_hour))*60) - _minute)*60);
+		_hour = floor dayTime;
+		_minute = floor ((dayTime - _hour) * 60);
+		_second = floor (((((dayTime) - (_hour))*60) - _minute)*60);
 
 		_h = "";
-		if(_hour < 10) then{_h = "0";};
+		if (_hour < 10) then {
+			_h = "0";
+		};
 		_m = "";
-		if(_minute < 10) then{_m = "0";};
+		if (_minute < 10) then {
+			_m = "0";
+		};
 		_s = "";
-		if(_second < 10) then{_s = "0";};
+		if (_second < 10) then {
+			_s = "0";
+		};
 
-		_time24 = text format ["%4%1:%5%2:%6%3",_hour,_minute,_second, _h, _m, _s];
+		_time24 = text format ["%4%1:%5%2:%6%3", _hour, _minute, _second, _h, _m, _s];
 
 		_attach = format["%1%2%1%1%3", _CRLF, _time24, coala_currentFolderName];
 		ctrlSetText [1400, format["%1%2 ", _input, _attach]];
@@ -212,20 +218,20 @@ fncoala_excecuteCommand = {
 	_returned
 };
 
-fncoala_getProgramEntryById = {
+fnCoala_getProgramEntryById = {
 	_returner = [];
 	{
 		if (str(_x select 1) == str(_this select 0)) then {
 			_returner = _x;
 		};
-	} foreach coala_ActivePrograms;
-	
+	} forEach coala_ActivePrograms;
+
 	_returner
 };
 
-fncoala_removeTopLine = {
-	//max line num: 28
-	//[currentInput] call fncoala_getParameters;
+fnCoala_removeTopLine = {
+	// max line num: 28
+	// [currentInput] call fnCoala_getParameters;
 	ctrlSetText[2001, "got here"];
 	_arr = toArray (_this select 0);
 	_CRLF = toString [0x0D, 0x0A];
@@ -238,7 +244,7 @@ fncoala_removeTopLine = {
 		};
 		if (count _lastTwo == 1) then {
 			_lastTwo set [1, _x];
-			if((toString _lastTwo) == _CRLF) then {
+			if ((toString _lastTwo) == _CRLF) then {
 				_lineBreaks set[count _lineBreaks, _forEachIndex];
 			};
 		};
@@ -246,13 +252,13 @@ fncoala_removeTopLine = {
 			_lastTwo set [0, _lastTwo select 1];
 			_lastTwo set [1, _x];
 		};
-	} foreach _arr;
+	} forEach _arr;
 	ctrlSetText[2001, (toString _lineBreaks)];
-	cutText [(toString _lineBreaks),"PLAIN",2];
+	cutText [(toString _lineBreaks), "PLAIN", 2];
 };
 
-fncoala_getParameters = {
-	//[command] call fncoala_getParameters;
+fnCoala_getParameters = {
+	// [command] call fnCoala_getParameters;
 	_command = _this select 0;
 	_arr = toArray _command;
 	_i = 0;
@@ -262,7 +268,7 @@ fncoala_getParameters = {
 
 	while { _i < count _arr } do {
 		if (str(_arr select _i) == "32") then {
-			//leerzeichen gefunden -> parameter
+			// leerzeichen gefunden -> parameter
 			if (_isFirst) then {
 				_isFirst = false;
 				_lastFoundIndex = _i;
@@ -281,46 +287,46 @@ fncoala_getParameters = {
 	_parameters
 };
 
-fncoala_generateListFromArray = {
-	//[array] call fncoala_generateListFromArray
+fnCoala_generateListFromArray = {
+	// [array] call fnCoala_generateListFromArray
 	_arr = _this select 0;
 	_CRLF = toString [0x0D, 0x0A];
 	_arrList = "";
 
 	{
 		_arrList = format["%1%2%3", _arrList, _CRLF, _x];
-	} foreach _arr;
+	} forEach _arr;
 
 	_arrList
 };
 
-fncoala_generateListFromFolders = {
-	//[folders] call fncoala_generateListFromFolders
+fnCoala_generateListFromFolders = {
+	// [folders] call fnCoala_generateListFromFolders
 	_folders = _this select 0;
 	_CRLF = toString [0x0D, 0x0A];
 	_folderList = "";
 
 	{
 		if (_x select 4 == 1) then {
-			_folderList = format["%1%2#Folder#  \%3\", _folderList, _CRLF, _x select 0];
+			_folderList = format["%1%2#Folder# \%3\", _folderList, _CRLF, _x select 0];
 		} else {
-			_folderList = format["%1%2# File #  \%3", _folderList, _CRLF, _x select 0];
+			_folderList = format["%1%2# File # \%3", _folderList, _CRLF, _x select 0];
 		}
 	} forEach _folders;
 
 	_folderList
 };
 
-//Holt aus der gesamten Console den letzten Command
-fncoala_getLastInsert = {
+// Holt aus der gesamten Console den letzten Command
+fnCoala_getLastInsert = {
 	/*lastInsert = [string] call fnc_getLastInsert
-	Example:
-	awdlkawlkawd cd
-	dc dwaklwakldwa
-	dc
+		Example:
+		awdlkawlkawd cd
+		dc dwaklwakldwa
+		dc
 	cd */
 
-	//alles am anfang trimmen
+	// alles am anfang trimmen
 	private "_arr";
 	_arr = toArray(_this select 0);
 	reverse _arr;
@@ -335,7 +341,7 @@ fncoala_getLastInsert = {
 		};
 		if ((str (_arr select _i) == "13") and _foundLetter) then {
 			_break = true;
-			//found space
+			// found space
 		};
 		_i = _i + 1;
 	};
@@ -353,19 +359,19 @@ fncoala_getLastInsert = {
 		};
 		if ((str (_arr select _i) == "32") and _foundLetter) then {
 			_lastFound = _i;
-			//found space
+			// found space
 		};
 		_i = _i + 1;
 	};
 	_arr resize _lastFound;
 	reverse _arr;
 
-	/*//leerzeichen am ende trimmen
+	/*// leerzeichen am ende trimmen
 	_i = 0;
 	_break = false;
-	while{ (_i < ((count _arr)-1)) and (!_break) } do {
+	while { (_i < ((count _arr)-1)) and (!_break) } do {
 		_curChar = str (_arr select _i);
-		if((_curChar == "32")) then {
+		if ((_curChar == "32")) then {
 			_break = true;
 		};
 		_i = _i + 1;

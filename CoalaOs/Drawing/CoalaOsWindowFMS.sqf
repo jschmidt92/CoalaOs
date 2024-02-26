@@ -1,6 +1,12 @@
-_width = 62.5;
-_height = 27.5;
-_standartURL = "https://a3sog.org/portal/fleet-military-surplus";
+/*
+	File: CoalaOsWindowFMS.sqf
+	Creator: J. Schmidt
+	Date: 02.25.2024
+*/
+
+_width = 45.75;
+_height = 21.5;
+_standartURL = "https://spearnet.mil/portal/fleet-military-surplus";
 _newFMSWindow = [-11.25, -4, _width, _height, "Portal - Fleet Military Surplus Store"] call fnCoala_DrawWindow;
 
 _browserCtrl = ["RscText", "", 0, 0, 0, 0] call addCtrl;

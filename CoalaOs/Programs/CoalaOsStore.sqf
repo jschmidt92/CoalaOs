@@ -1,5 +1,9 @@
-fncoala_startstore = {
-	
-};
+/*
+	File: CoalaOsStore.sqf
+	Creator: J. Schmidt
+	Date: 02.25.2024
+*/
 
-call fncoala_startstore;
+fnCoala_startstore = {};
+
+call fnCoala_startstore;

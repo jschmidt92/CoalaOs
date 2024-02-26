@@ -1,14 +1,16 @@
 /*
-	File: CoalaOsSurveillance.sqf
+	File: CoalaOsSurveillence.sqf
 	Creator: J. Schmidt
-	Date: 01-10-2023
+	Date: 02.25.2024
 */
 
-params ["_parameters", "_processId", "_fileName"];
+_parameters = _this select 0;
+_processId = _this select 1;
+_fileName = _this select 2;
 _uav = nil;
 _cam = nil;
 
-fncoala_startsurveillance = {
+fnCoala_startsurveilence = {
 	missionNamespace setVariable [format["%1%2", _processId, "cam"], nil];
 	_width = 30;
 	_height = 20;
@@ -51,41 +53,40 @@ fncoala_startsurveillance = {
 	missionNamespace setVariable [format["%1%2", _processId, "_btnPlus"], _btnPlus];
 
 	_btnMinus = ["RscButton", "-", 0, 0, 0, 0] call addCtrl;
-	[_programWindow select 0, _btnMinus, [0, 1.1, 1,1]] call fnCoala_addControlToWindow;
+	[_programWindow select 0, _btnMinus, [0, 1.1, 1, 1]] call fnCoala_addControlToWindow;
 	_btnMinus ctrlAddEventHandler ["MouseButtonDown", {
 		_id = missionNamespace getVariable format["%1%2", _this select 0, "_camId"];
 		_fov = missionNamespace getVariable format["%1%2", _id, "_fov"];
 		_fov = _fov + 0.1;
 		missionNamespace setVariable [format["%1%2", _id, "_fov"], _fov];
 	}];
-	missionNamespace setVariable [format["%1%2", _processId, "_btnMinus"], _btnMinus];	
+	missionNamespace setVariable [format["%1%2", _processId, "_btnMinus"], _btnMinus];
 
 	_playerSelection = ["RscCombo", "", 0, 0, 0, 0] call addCtrl;
 	[_programWindow select 0, _playerSelection, [0, 3.2, 10, 1]] call fnCoala_addControlToWindow;
 	_playerSelection ctrlAddEventHandler ["LBSelChanged", {
 		_control = _this select 0;
 		_selectedIndex = lbCurSel _control;
-		if(_selectedIndex != -1) then {
+		if (_selectedIndex != -1) then {
 			_allDrones = missionNamespace getVariable format["%1%2", _control, "allDrones"];
 			_renderSurface = missionNamespace getVariable format["%1%2", _control, "renderSurface"];
 			_processId = missionNamespace getVariable format["%1%2", _control, "processId"];
 			_oldCam = missionNamespace getVariable format["%1%2", _processId, "cam"];
-
-			if(_oldCam != nil) then {
-				_oldCam cameraEffect ["terminate", "back"];
+			if (_oldCam != nil) then {
+				_oldCam cameraEffect ["terminate", "back"]; 
 				camDestroy _oldCam;
 			};
 
 			_selectedDrone = (_allDrones select _selectedIndex);
 			_droneId = str(netId _selectedDrone);
 
-			hint str(_renderSurface);
+			// hint str(_renderSurface);
 			_renderSurface ctrlSetText "#(argb,512,512,1)r2t(" + _playerId + ",1)";
 
 			[_selectedDrone, _processId, _renderSurface] call setActiveDrone;
 		};
 	}];
-
+	
 	[_playerSelection, _processId] spawn keepDronesListUpdated;
 
 	_textHeight = ["RscText", "100m", 0, 0, 0, 0] call addCtrl;
@@ -99,13 +100,13 @@ fncoala_startsurveillance = {
 	missionNamespace setVariable [format["%1%2", _processId, "_textHeight"], _textHeight];
 	missionNamespace setVariable [format["%1%2", _processId, "_textDirection"], _textDirection];
 
-	[_programWindow select 0, _processId, "processID"] call fnCoala_addVariableToControl;	
+	[_programWindow select 0, _processId, "processID"] call fnCoala_addVariableToControl;
 
 	_allDrones = [];
 	{
 		_name = getText(configFile >> "cfgVehicles" >> typeOf _x >> "DisplayName");
 		//hint _name;
-		if(typeOf _x == "B_UAV_01_F") then {
+		if (typeOf _x == "B_UAV_01_F") then {
 			_allDrones = _allDrones + [_x];
 			_playerSelection lbAdd (_name);
 		};
@@ -116,7 +117,10 @@ fncoala_startsurveillance = {
 };
 
 setActiveDrone = {
-	params ["_uav", "_processId", "_renderSurface"];	
+	_uav = _this select 0;
+	_processId = _this select 1;
+	_renderSurface = _this select 2;
+
 	_camId = str(netId _uav);
 	missionNamespace setVariable [format["%1%2", _processId, "_uavId"], _camId];
 
@@ -136,7 +140,7 @@ setActiveDrone = {
 	//_cam camSetTarget player;
 
 	/* switch cam to thermal */
-	if(count _parameters > 2) then {
+	if (count _parameters > 2) then {
 		_camId setPiPEffect [parseNumber(_parameters select 2)];
 	} else {
 		_camId setPiPEffect [0];
@@ -179,58 +183,59 @@ keepDronesListUpdated = {
 	missionNamespace setVariable [format["%1%2", _processId, "programActive"], "1"];
 
 	_active = missionNamespace getVariable format["%1%2", _processId, "programActive"];
-	while { _active == "1" } do {
+	while {_active == "1"} do {
 		lbClear _playerSelection;
 		_allDrones = [];
 		{
 			_name = getText(configFile >> "cfgVehicles" >> typeOf _x >> "DisplayName");
 			//hint _name;
-			if(typeOf _x == "B_UAV_01_F") then {
+			if (typeOf _x == "B_UAV_01_F") then {
 				_allDrones = _allDrones + [_x];
 				_playerSelection lbAdd (_name);
 			};
 		} foreach vehicles;
 		missionNamespace setVariable [format["%1%2", _playerSelection, "allDrones"], _allDrones];
-
 		sleep 1;
-
 		_active = missionNamespace getVariable [format["%1%2", _processId, "programActive"], "0"];
 	};
 };
 
 doCamMovement = {
-	params ["_uav", "_cam", "_procId", "_id", "_textDirection", "_textHeight"];
-	private _isAllowed = "true";
-	
-	while { _isAllowed == "true" || str(_isAllowed) == "<null>" } do {
+	_uav = _this select 0;
+	_cam = _this select 1;
+	_procId = _this select 2;
+	_id = _this select 3;
+	_textDirection = _this select 4;
+	_textHeight = _this select 5;
+	_isAllowed = "true";
+
+	while {_isAllowed == "true" || str(_isAllowed) == "<null>"} do {
 		_dir = (_uav selectionPosition "PiP0_pos") vectorFromTo (_uav selectionPosition "PiP0_dir");
 		_cam setVectorDirAndUp [ _dir, _dir vectorCrossProduct [-(_dir select 1), _dir select 0, 0]];
 		_fov = nil;
 		_fov = missionNamespace getVariable format["%1%2", _id, "_fov"];
-		if(str(_fov) != "<null>") then {
+		if (str(_fov) != "<null>") then {
 			_cam camSetFov _fov;
 			_cam camCommit 0;
 		};
-
 		sleep 0.1;
-
 		_textHeight ctrlSetText format["%1m", floor(getPos _uav select 2)];
 		_textDirection ctrlSetText format["Dir: %1", floor(getDir _uav)];
 		_isAllowed = missionNamespace getVariable format["%1%2", _procId, "_doMovement"];
 	};
 
-	_cam cameraEffect ["terminate", "back"];
+	_cam cameraEffect ["terminate","back"];
 	camDestroy _cam;
 };
 
-fncoala_stopsurveillance = {
+fnCoala_stopsurveilence = {
 	_procId = _this select 0;
 	_cam = missionNamespace getVariable format["%1%2", _procId, "_cam"];
 	_uav = missionNamespace getVariable format["%1%2", _procId, "_uav"];
-	_cam cameraEffect ["terminate", "back"];
+	_cam cameraEffect ["terminate","back"];
 	camDestroy _cam;
 	missionNamespace setVariable [format["%1%2", _procId, "_doMovement"], "false"];
 	missionNamespace setVariable [format["%1%2", _procId, "programActive"], "0"];
 };
 
-call fncoala_startsurveillance;
+call fnCoala_startsurveilence;
