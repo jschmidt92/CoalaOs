@@ -33,9 +33,7 @@ waitUntil {
 	scriptDone coalaFunctionsInit && scriptDone coalaHandlerInit && scriptDone coalaFileInit
 };
 
-// _laptop = "Land_Laptop_unfolded_F" createVehicle position player;
 _laptop = "Land_SOG_Tablet" createVehicle position player;
-// _laptop attachTo [player, [0, 0.3, 0], "head"];
 _laptop attachTo [player, [-0.03125, 0.3, 0.125], "head"];
 _laptop setDir (180);
 hideObject _laptop;

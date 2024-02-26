@@ -8,9 +8,14 @@ _processId = _this select 1;
 _fileName = _this select 2;
 
 fnCoala_startfrontcam = {
-	_programWindow = [1, 1, 30, 15, _fileName] call fnCoala_DrawWindow;
+	_width = 23.25;
+	_height = 10.75;
+	_x = -2;
+	_y = 1;
+
+	_programWindow = [_x, _y, _width, _height, _fileName] call fnCoala_DrawWindow;
 	_renderSurface = ["RscPicture", "", 0, 0, 0, 0] call addCtrl;
-	[_programWindow select 0, _renderSurface, [0, 0, 30, 15 - 1.5]] call fnCoala_addControlToWindow;
+	[_programWindow select 0, _renderSurface, [0, 0, _width, _height - 1.5]] call fnCoala_addControlToWindow;
 
 	[_programWindow select 0, _processId, "processID"] call fnCoala_addVariableToControl;
 

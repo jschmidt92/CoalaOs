@@ -4,19 +4,17 @@
 	Date: 02.25.2024
 */
 
-_width = 45.75;
+_width = 46.5;
 _height = 21.5;
+_x = -2;
+_y = 1;
+
 _standartURL = format ["https://spearnet.mil/portal/federal-deposit-insurance-corporation/%1", (player getVariable ["bankAccount", 0])];
-_newWindow = [-1.5, 1, _width, _height, "Portal - Federal Deposit Insurance Corporation"] call fnCoala_DrawWindow;
+_newWindow = [_x, _y, _width, _height, "Portal - Federal Deposit Insurance Corporation"] call fnCoala_DrawWindow;
 
-_browserCtrl = ["RscText", "", 0, 0, 0, 0] call addCtrl; // idc 1815
-_browserCtrl ctrlSetBackgroundColor [0.9, 0.9, 0.9, 1];
-_browserCtrl ctrlSetTextColor [0.1, 0.1, 0.1, 1];
-[_newWindow select 0, _browserCtrl, [0.2, 1.7, _width - 0.2, _height - 3]] call fnCoala_addControlToWindow;
-
-_pageTitle = ["RscText", "Federal Deposit Insurance Corporation", 0, 0, 0, 0] call addCtrl; // idc 1816
-_pageTitle ctrlSetTextColor [0, 0, 0, 1];
-[_newWindow select 0, _pageTitle, [25, 2.5, _width - 21, _height - 25]] call fnCoala_addControlToWindow;
+_backgroundCtrl = ["RscText", "", 0, 0, 0, 0] call addCtrl;
+_backgroundCtrl ctrlSetBackgroundColor [1, 1, 1, 1];
+[_newWindow select 0, _backgroundCtrl, [0, 0, _width - 0, _height - 0]] call fnCoala_addControlToWindow;
 
 _bankCtrl = ["RscText", "Bank:", 0, 0, 0, 0] call addCtrl; // idc 1817
 _bankCtrl ctrlSetTextColor [0, 0, 0, 1];
@@ -60,7 +58,7 @@ _depositBtn ctrlSetTextColor [1, 1, 1, 1];
 [_newWindow select 0, _depositBtn, [24, 8.5, _width - 38, _height - 20.5]] call fnCoala_addControlToWindow;
 _depositBtn ctrlEnable true;
 _depositBtn ctrlAddEventHandler ["MouseButtonDown", {
-	[]call SOG_ClientModules_fnc_bankDeposit;
+	[] call SOG_ClientModules_fnc_bankDeposit;
 }];
 
 _pageSubtitle = ["RscText", "Transfer Funds", 0, 0, 0, 0] call addCtrl; // idc 1825
@@ -83,14 +81,14 @@ _transferValue ctrlSetBackgroundColor [0.25, 0.25, 0.25, 1];
 _transferValue ctrlSetTextColor [1, 1, 1, 1];
 [_newWindow select 0, _transferValue, [20, 14.5, _width - 32, _height - 20.5]] call fnCoala_addControlToWindow;
 
-// _transferBtn = ["RscButton", "Transfer", 0, 0, 0, 0] call addCtrl; // idc 1830
-// _transferBtn ctrlSetBackgroundColor [0, 0, 0, 1];
-// _transferBtn ctrlSetTextColor [1, 1, 1, 1];
-// [_newWindow select 0, _transferBtn, [34, 19.5, _width - 56, _height - 26.5]] call fnCoala_addControlToWindow;
-// _transferBtn ctrlEnable true;
-// _transferBtn ctrlAddEventHandler ["MouseButtonDown", {
-// 	[]call SOG_ClientModules_fnc_bankTransfer;
-// }];
+_transferBtn = ["RscButton", "Transfer", 0, 0, 0, 0] call addCtrl; // idc 1830
+_transferBtn ctrlSetBackgroundColor [0, 0, 0, 1];
+_transferBtn ctrlSetTextColor [1, 1, 1, 1];
+[_newWindow select 0, _transferBtn, [24, 16.5, _width - 38, _height - 20.5]] call fnCoala_addControlToWindow;
+_transferBtn ctrlEnable true;
+_transferBtn ctrlAddEventHandler ["MouseButtonDown", {
+	[] call SOG_ClientModules_fnc_bankTransfer;
+}];
 
 _url = ["RscEdit", _standartURL, 0, 0, 0, 0] call addCtrl; // idc 1831
 _url ctrlSetBackgroundColor [0.25, 0.25, 0.25, 1];
@@ -100,12 +98,5 @@ _url ctrlSetTextColor [1, 1, 1, 1];
 _changeSiteButton = ["RscButton", "Go", 0, 0, 0, 0] call addCtrl; // idc 1832
 _changeSiteButton ctrlSetBackgroundColor [0.1, 0.1, 0.1, 1];
 [_newWindow select 0, _changeSiteButton, [_width - 5, 0.2, 5, 1.5]] call fnCoala_addControlToWindow;
-_changeSiteButton ctrlAddEventHandler ["MouseButtonDown", {
-	_browserCtrl = missionNamespace getVariable format["%1browser", str(_this select 0)];
-	_url = missionNamespace getVariable format["%1url", str(_this select 0)];
 
-	_browserCtrl htmlLoad (ctrlText _url);
-}];
-
-missionNamespace setVariable [ format["%1browser", str(_changeSiteButton)], _browserCtrl];
 missionNamespace setVariable [ format["%1url", str(_changeSiteButton)], _url];

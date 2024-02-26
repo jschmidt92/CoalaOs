@@ -4,21 +4,24 @@
 	Date: 02.25.2024
 */
 
-params ["_parameters","_processId","_fileName"];
+params ["_parameters", "_processId", "_fileName"];
+
 _cam = nil;
 
 fnCoala_startbodycam = {
-	//hint str(_parameters);
-	missionNamespace setVariable [format["%1%2", _processId, "cam"], "none"];
-	
-	_x = 1;
+	_width = 23.25;
+	_height = 10.75;
+	_x = -2;
 	_y = 1;
+
+	missionNamespace setVariable [format["%1%2", _processId, "_cam"], "none"];
+
 	if(count _parameters > 2) then {
 		_x = parseNumber (_parameters select 2);
 		_y = parseNumber (_parameters select 3);
 	};
 	
-	_programWindow = [_x, _y, 30, 15, _fileName] call fnCoala_DrawWindow;
+	_programWindow = [_x, _y, _width, _height, _fileName] call fnCoala_DrawWindow;
 	[_programWindow select 0, _processId, "processID"] call fnCoala_addVariableToControl;
 	missionNamespace setVariable [format["%1%2", _processId, "window"], _programWindow];
 	
@@ -27,7 +30,7 @@ fnCoala_startbodycam = {
 	_prog set [7, [(_pos select 0) / GUI_GRID_W + GUI_GRID_X, (_pos select 1) / GUI_GRID_H + GUI_GRID_Y]];
 	
 	_renderSurface = ["RscPicture", "", 0, 0, 0, 0] call addCtrl;
-	[_programWindow select 0, _renderSurface, [0, 0, 30, 15 - 1.5]] call fnCoala_addControlToWindow;
+	[_programWindow select 0, _renderSurface, [0, 0, _width, _height - 1.5]] call fnCoala_addControlToWindow;
 	
 	_direction = ["RscText", "", 0, 0, 0, 0] call addCtrl;
 	[_programWindow select 0, _direction, [11, 0, 4, 1]] call fnCoala_addControlToWindow;
@@ -40,7 +43,7 @@ fnCoala_startbodycam = {
 		_allPlayers = missionNamespace getVariable format["%1%2", _control, "players"];
 		_renderSurface = missionNamespace getVariable format["%1%2", _control, "renderSurface"];
 		_processId = missionNamespace getVariable format["%1%2", _control, "processId"];
-		_oldCam = missionNamespace getVariable format["%1%2", _processId, "cam"];
+		_oldCam = missionNamespace getVariable format["%1%2", _processId, "_cam"];
 		_programWindow = missionNamespace getVariable format["%1%2", _control, "programWindow"];
 		_direction = missionNamespace getVariable format["%1%2", _control, "direction"];
 		_selectedPlayer = (_allPlayers select _selectedIndex) select 0;
@@ -61,7 +64,7 @@ fnCoala_startbodycam = {
 			_cam cameraEffect ["Internal", "Back", str(_processId)];
 			_cam attachTo [vehicle _selectedPlayer, [-0.05, 0.1, 0.05], "Head"];
 			_cam camCommit 0;
-			missionNamespace setVariable [format["%1%2", _processId, "cam"], _cam];
+			missionNamespace setVariable [format["%1%2", _processId, "_cam"], _cam];
 			missionNamespace setVariable [format["%1%2", _processId, "playerId"], _playerId];
 			[_selectedPlayer, _cam, _processId, _direction] spawn checkActiveCameraPosition;
 		};
@@ -164,7 +167,7 @@ fnCoala_stopbodycam = {
 	//hint format["bla. %1",  str([_procId] call fnCoala_getProgramEntryById)];
 
 	missionNamespace setVariable [format["%1%2", _procId, "programActive"], "0"];
-	_cam = missionNamespace getVariable format["%1%2", _procId, "cam"];
+	_cam = missionNamespace getVariable format["%1%2", _procId, "_cam"];
 	if (str(_cam) != "<null>") then {
 		_cam cameraEffect ["terminate", "back"];
 		camDestroy _cam;

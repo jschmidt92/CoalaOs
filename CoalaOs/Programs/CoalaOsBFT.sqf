@@ -7,14 +7,16 @@
 params ["_parameters", "_processId", "_fileName"];
 
 fnCoala_startbluefortracker = {
-	_width = 40;
-	_height = 18;
-	_x = 1;
+	_width = 30;
+	_height = 20.25;
+	_x = -2;
 	_y = 1;
+
 	if (count _parameters > 2) then {
 		_x = parseNumber (_parameters select 2);
 		_y = parseNumber (_parameters select 3);
 	};
+
 	_programWindow = [_x, _y, _width, _height, _fileName] call fnCoala_DrawWindow;
 	[_programWindow select 0, _processId, "processID"] call fnCoala_addVariableToControl;
 
@@ -27,8 +29,9 @@ fnCoala_startbluefortracker = {
 
 	_map ctrlAddEventHandler ["Draw", {
 		{
-			_searchFor = ["tf_rt1523g", "tf_rt1523g_big", "tf_rt1523g_sage", "tf_rt1523g_green", "tf_rt1523g_black", "tf_rt1523g_fabric", "tf_rt1523g_bwmod", "tf_rt1523g_big_bwmod", "tf_rt1523g_big_rhs", "tf_rt1523g_rhs"];
-			if (((playerSide == side _x) || (side player == side _x)) && (((backpack _x) in _searchFor) || ((commander vehicle _x == _x) && (vehicle _x != _x)))) then {
+			_items = items _x;
+			_device = ["SOG_Tablet"];
+			if (((playerSide == side _x) || (side player == side _x)) && ((_device findIf { _x in _items } > -1) || ((commander vehicle _x == _x) && (vehicle _x != _x)))) then {
 				_name = name _x;
 				if ((commander vehicle _x == _x) && (vehicle _x != _x)) then {
 					_name = format["%1 - %2", _name, getText (configFile >> "CfgVehicles" >> typeOf (vehicle _x) >> "displayname")];

@@ -6,7 +6,7 @@
 
 coala_FileSystem = [
 	["C:", 0, 0, [1, 2, 3], 1],
-	["Programs", 1, 0, [15, 16, 17, 18, 19], 1],
+	["Programs", 1, 0, [15, 16, 17, 18, 19, 20], 1],
 	["Windows", 2, 0, [], 1],
 	["Users", 3, 0, [4], 1],
 	["root", 4, 3, [5, 6, 7, 8, 9, 10], 1],
@@ -20,11 +20,12 @@ coala_FileSystem = [
 	["video1.mp4", 12, 10, [], 0, "\A3\Missions_F_EPA\video\A_in_intro.ogv", "video"],
 	["video2.mp4", 13, 10, [], 0, "\A3\Missions_F_EPA\video\A_hub_quotation.ogv", "video"],
 	["video3.mp4", 14, 10, [], 0, "\A3\Missions_F_EPA\video\A_in_quotation.ogv", "video"],
-	["Surveillance.exe", 15, 1, [], 0, "CoalaOs\Programs\CoalaOsSurveillance.sqf", "exe", "surveillance"],
-	["frontcam.exe", 16, 1, [], 0, "CoalaOs\Programs\CoalaOsFrontcam.sqf", "exe", "frontcam"],
-	["CoalaOsBFT.exe", 18, 1, [], 0, "CoalaOs\Programs\CoalaOsBFT.sqf", "exe", "bluefortracker"],
+	["UAVFeed.exe", 15, 1, [], 0, "CoalaOs\Programs\CoalaOsSurveillance.sqf", "exe", "surveillance"],
+	["Frontcam.exe", 16, 1, [], 0, "CoalaOs\Programs\CoalaOsFrontcam.sqf", "exe", "frontcam"],
+	["Bodycam.exe", 17, 1, [], 0, "CoalaOs\Programs\CoalaOsBodyCam.sqf", "exe", "bodycam"],
+	["BFT.exe", 18, 1, [], 0, "CoalaOs\Programs\CoalaOsBFT.sqf", "exe", "bluefortracker"],
 	["Chatty.exe", 19, 1, [], 0, "CoalaOs\Programs\CoalaOsChatty.sqf", "exe", "Chatty"],
-	["Bodycam.exe", 17, 1, [], 0, "CoalaOs\Programs\CoalaOsBodyCam.sqf", "exe", "bodycam"]
+	["MDT.exe", 20, 1, [], 0, "CoalaOs\Programs\CoalaOsMDT.sqf", "exe", "MDT"]
 ];
 
 coala_ActivePrograms = [];

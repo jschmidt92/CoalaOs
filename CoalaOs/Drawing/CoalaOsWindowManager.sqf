@@ -14,8 +14,8 @@ isMouseDown = 0;
 coalaWindowId = 1801;
 
 GUI_TOP = 1;
-GUI_LEFT = -1.5;
-GUI_WIDTH = 45.75;
+GUI_LEFT = -2;
+GUI_WIDTH = 46.5;
 GUI_HEIGHT = 21.75;
 GUI_RIGHT = (GUI_WIDTH + GUI_LEFT) * GUI_GRID_W;
 GUI_BOTTOM = (GUI_HEIGHT + GUI_TOP) * GUI_GRID_H;
@@ -156,15 +156,23 @@ fnCoala_drawBackgroundImage = {
 // _this select 0 -> the Command that should be excecuted (for example "cd Arma")
 // _this select 1 -> the old Explorer Window
 fnCoala_changeExplorerPath = {
-	_command = _this select 0;
-	_newWindow = _this select 1;
+	params ["_command", "_newWindow"];
+
+	_width = 20;
+	_height = 12;
+	_x = 10;
+	_y = 6;
+
 	[_newWindow select 0] call fnCoala_CloseWindow;
-	_newWindow = [5, 5, 20, 12, "Explorer - C:\"] call fnCoala_DrawWindow;
+	_newWindow = [_x, _y, _width, _height, "Explorer - C:\"] call fnCoala_DrawWindow;
+
 	[_command] call fnCoala_excecuteCommandFromNonConsole;
 	_folders = ["ls"] call fnCoala_excecuteCommandFromNonConsole;
+
 	_yIndex = 0;
 	_breaker = 3;
 	_counter = 0;
+
 	_folders = [[".."]] + _folders;
 	{
 		_cur = (_folders select _forEachIndex);
@@ -260,7 +268,7 @@ fnCoala_AddDesktopIcon = {
 
 // Draws the Taskbar
 fnCoala_DrawTaskBar = {
-	_taskBar = ["RscBackground", "", GUI_LEFT - 0.25, GUI_HEIGHT - 0.5, GUI_WIDTH + 0.25, 1.5] call addCtrl;
+	_taskBar = ["RscBackground", "", GUI_LEFT - 0, GUI_HEIGHT - 0.5, GUI_WIDTH + 0, 1.5] call addCtrl;
 	_r = 24;
 	_g = 31;
 	_b = 28;
@@ -318,17 +326,17 @@ fnCoala_DrawDesktop = {
 
 	_browser = [GUI_LEFT + 8, GUI_TOP + 2, "CoalaOs\Images\browserA.paa", "", 0] call fnCoala_AddDesktopIcon;
 	(_browser select 0) ctrlAddEventHandler ["MouseButtonDblClick", {
-		_width = 45.75;
+		_width = 46.5;
 		_height = 21.5;
+		_x = -2;
+		_y = 1;
+
 		_standartURL = "https://spearnet.mil/portal";
-		_newWindow = [-1.5, 1, _width, _height, "Portal - Home"] call fnCoala_DrawWindow;
+		_newWindow = [_x, _y, _width, _height, "Portal - Home"] call fnCoala_DrawWindow;
 
-		_browserCtrl = ["RscText", "", 0, 0, 0, 0] call addCtrl;
-		_browserCtrl ctrlSetBackgroundColor [0.9, 0.9, 0.9, 1];
-		_browserCtrl ctrlSetTextColor [0.1, 0.1, 0.1, 1];
-		[_newWindow select 0, _browserCtrl, [0.2, 1.7, _width - 0.2, _height - 3]] call fnCoala_addControlToWindow;
-
-		_browserCtrl htmlLoad _standartURL;
+		_backgroundCtrl = ["RscText", "", 0, 0, 0, 0] call addCtrl;
+		_backgroundCtrl ctrlSetBackgroundColor [1, 1, 1, 1];
+		[_newWindow select 0, _backgroundCtrl, [0, 0, _width - 0, _height - 0]] call fnCoala_addControlToWindow;
 
 		_fdic = ["RscPicture", "CoalaOs\Images\fdic.paa", 0, 0, 0, 0] call addCtrl;
 		[_newWindow select 0, _fdic, [16, 5, _width - 32, _height - 18]] call fnCoala_addControlToWindow;
@@ -357,19 +365,12 @@ fnCoala_DrawDesktop = {
 		_url = ["RscEdit", _standartURL, 0, 0, 0, 0] call addCtrl;
 		_url ctrlSetBackgroundColor [0.25, 0.25, 0.25, 1];
 		_url ctrlSetTextColor [1, 1, 1, 1];
-		[_newWindow select 0, _url, [0.4, 0.2, _width - 5.5, 1.5]] call fnCoala_addControlToWindow;
+		[_newWindow select 0, _url, [0.1, 0.2, _width - 5.5, 1.5]] call fnCoala_addControlToWindow;
 
 		_changeSiteButton = ["RscButton", "Go", 0, 0, 0, 0] call addCtrl;
 		_changeSiteButton ctrlSetBackgroundColor [0.1, 0.1, 0.1, 1];
-		[_newWindow select 0, _changeSiteButton, [_width - 5, 0.2, 5, 1.5]] call fnCoala_addControlToWindow;
-		_changeSiteButton ctrlAddEventHandler ["MouseButtonDown", {
-			_browserCtrl = missionNamespace getVariable format["%1browser", str(_this select 0)];
-			_url = missionNamespace getVariable format["%1url", str(_this select 0)];
+		[_newWindow select 0, _changeSiteButton, [_width - 5.4, 0.2, 5.4, 1.5]] call fnCoala_addControlToWindow;
 
-			_browserCtrl htmlLoad (ctrlText _url);
-		}];
-
-		missionNamespace setVariable [ format["%1browser", str(_changeSiteButton)], _browserCtrl];
 		missionNamespace setVariable [ format["%1url", str(_changeSiteButton)], _url];
 
 		_allControls = [];
@@ -426,7 +427,7 @@ fnCoala_DrawWindow = {
 		};
 	};
 
-	_windowBackground = ["RscPicture", MISSION_ROOT + "CoalaOs\Images\windowBackground.jpg", (_this select 0), (_this select 1), _width, _height] call addCtrl;
+	_windowBackground = ["RscPicture", MISSION_ROOT + "CoalaOs\Images\winBg.paa", (_this select 0), (_this select 1), _width, _height] call addCtrl;
 	[_windowBackground, 0, 0] call setXYVersatz;
 
 	_topBar = ["RscBackground", "", (_this select 0), (_this select 1), _width, 1.5] call addCtrl;

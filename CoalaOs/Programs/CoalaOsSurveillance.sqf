@@ -13,8 +13,11 @@ _cam = nil;
 fnCoala_startsurveilence = {
 	missionNamespace setVariable [format["%1%2", _processId, "cam"], nil];
 	_width = 30;
-	_height = 20;
-	_programWindow = [1, 1, _width, _height, _fileName] call fnCoala_DrawWindow;
+	_height = 20.25;
+	_x = -2;
+	_y = 1;
+
+	_programWindow = [_x, _y, _width, _height, _fileName] call fnCoala_DrawWindow;
 	_renderSurface = ["RscPicture", "", 0, 0, 0, 0] call addCtrl;
 	[_programWindow select 0, _renderSurface, [0, 0, _width, _height - 1.5]] call fnCoala_addControlToWindow;
 
